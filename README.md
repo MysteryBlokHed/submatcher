@@ -7,9 +7,5 @@ If you don't already have it, download it [here](https://www.python.org/download
 **praw**  
 Download using `pip install praw`, or download the latest wheel [here](https://pypi.org/project/praw/#files) and use `pip install (.whl file)`.
 
-## Use (Frontend)
-    [ALL]
-    AskReddit
-    subtwo
-    [FAVOURITES]
-    AskReddit
+# Documentation
+Documentation is available on the [Wiki](https://github.com/MysteryBlokHed/submatcher/wiki).

@@ -7,7 +7,6 @@ from time import sleep
 USERNAME = "submatcher"
 SUB = "submatcher"
 SIGNUP_POST_ID = "dg4qt2"
-INSTRUCTIONS_POST_URL = "https://www.reddit.com/r/submatcher/comments/dg4pma/welcome_to_rsubmatcher/"
 RUN_PER_X_MINUTES = 60
 
 SUB_MATCH_THRESHOLD = 5
@@ -39,10 +38,9 @@ class SignupThread(threading.Thread):
                             
                             # Add subs to database
                             if mode == 1:
-                                if line != "[ALL]": users_subs[user]["all"].append(line)
+                                if line != "[ALL]" and line.lower() not in users_subs[user]["all"]: users_subs[user]["all"].append(line.lower())
                             elif mode == 2:
-                                if line in users_subs[user]["all"]:
-                                    users_subs[user]["favourites"].append(line)
+                                if line.lower() in users_subs[user]["all"] and line.lower() not in users_subs[user]["favourites"]: users_subs[user]["favourites"].append(line.lower())
                         
                         # Write changes to file
                         f = open("users_subs.json", "w")
@@ -53,9 +51,39 @@ class SignupThread(threading.Thread):
                         print(f"Created account for u/{user}.")
                         message.mark_read()
                     else:
-                        message.reply(f"You have already signed up!  \nFor instructions on how to add subs to your account, go [here]({INSTRUCTIONS_POST_URL}).").upvote()
-                        print(f"Didn't create account for u/{user} as they already have one.")
+                        # Add subs to account
+                        newly_added = []
+                        fav_added = []
+
+                        mode = 0
+                        for line in message.body.split("\n"):
+                            if line == "[ADD]":
+                                mode = 1
+                            elif line == "[FAVOURITES_ADD]":
+                                mode = 2
+                            
+                            # Add subs to database
+                            if mode == 1:
+                                if line != "[ADD]" and line.lower() not in users_subs[user]["all"]:
+                                    users_subs[user]["all"].append(line.lower())
+                                    newly_added.append(line)
+                            elif mode == 2:
+                                if line.lower() in users_subs[user]["all"] and line.lower() not in users_subs[user]["favourites"]:
+                                    users_subs[user]["favourites"].append(line.lower())
+                                    fav_added.append(line)
+                        
+                        # Write changes to file
+                        f = open("users_subs.json", "w")
+                        f.write(json.dumps(users_subs))
+                        f.close()
+
+                        message.reply(f"Subs added: {str(newly_added).strip('[').strip(']')}\n\nFavourite subs added: {str(fav_added).strip('[').strip(']')}")
+                        print(f"Added subs to u/{user}'s account.")
                         message.mark_read()
+
+                        # message.reply(f"You have already signed up!  \nFor instructions on how to add subs to your account, go [here]({INSTRUCTIONS_POST_URL}).").upvote()
+                        # print(f"Didn't create account for u/{user} as they already have one.")
+                        # message.mark_read()
 
 class MatchThread(threading.Thread):
     def run(self):
