@@ -50,6 +50,7 @@ class SignupThread(threading.Thread):
                         message.reply(f"Successfully signed up!  \nAll subs list: {str(users_subs[user]['all']).strip('[').strip(']')}\n\nFavourite subs list: {str(users_subs[user]['favourites']).strip('[').strip(']')}").upvote()
                         print(f"Created account for u/{user}.")
                         message.mark_read()
+                        message.mod.remove()
                     else:
                         # Add subs to account
                         newly_added = []
@@ -80,6 +81,7 @@ class SignupThread(threading.Thread):
                         message.reply(f"Subs added: {str(newly_added).strip('[').strip(']')}\n\nFavourite subs added: {str(fav_added).strip('[').strip(']')}")
                         print(f"Added subs to u/{user}'s account.")
                         message.mark_read()
+                        message.mod.remove()
 
                         # message.reply(f"You have already signed up!  \nFor instructions on how to add subs to your account, go [here]({INSTRUCTIONS_POST_URL}).").upvote()
                         # print(f"Didn't create account for u/{user} as they already have one.")
